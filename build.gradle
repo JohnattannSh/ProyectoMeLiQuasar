@@ -1,0 +1,48 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.4.3'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.starwars'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	// Spring Boot Web para crear la API REST
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	// Dependencias  Lombok para reducir código repetitivo
+	implementation 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	// Jackson (incluido en Spring Boot Web, pero explícito para claridad)
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+	// Dependencias para pruebas
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	// Dependencias para la logica de la trilateracion
+	implementation 'com.lemmingapex.trilateration:trilateration:1.0.2'
+	implementation 'org.apache.commons:commons-math3:3.6.1'
+
+	// Dependencia para Swagger
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+
+	// Dependencia para configurar bean de Jakarta Validator
+	implementation 'org.hibernate.validator:hibernate-validator'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
