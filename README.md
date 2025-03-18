@@ -33,13 +33,16 @@ Utiliza algoritmos de trilateración para calcular la posición y luego reconstr
   Contiene las clases que definen y manejan excepciones personalizadas para controlar errores y devolver respuestas consistentes en caso de fallos.
 
 - **model:**  
-  Aquí se definen los modelos de datos, DTOs y entidades que representan la información con la que trabaja la aplicación, como `Satellite`, `RebelRequest`, `TopSecretResponse`, etc.
+  Aquí se definen los modelos de datos, DTOs y entidades que representan la información con la que trabaja la aplicación, como `Position`, `Satellite`, `RebelRequest`, `RebelResponse`, etc.
 
 - **service:**  
   Contiene la lógica de negocio de la aplicación, abstraída mediante interfaces para facilitar la prueba y el mantenimiento.
 
   - **impl:**  
     Este paquete agrupa las implementaciones concretas de las interfaces de servicio. Aquí se encuentran las clases que realizan el cálculo de la ubicación a partir de las distancias (por ejemplo, mediante trilateración usando Levenberg-Marquardt) y el ensamblaje del mensaje a partir de fragmentos, permitiendo que el resto de la aplicación dependa únicamente de los contratos definidos en los servicios.
+
+- **validation:**  
+  Contiene utilidades para validar y extraer la información de las solicitudes. Por ejemplo, se verifica que la petición incluya los tres satélites requeridos ("kenobi", "skywalker" y "sato") y se extraen sus datos de forma consistente. Esto centraliza la lógica de validación y extracción, facilitando el mantenimiento y respetando el principio de responsabilidad única.
 
 - **main:**  
   Es el punto de entrada de la aplicación, generalmente una clase anotada con `@SpringBootApplication`. Este archivo se encarga de arrancar el servidor, cargar las configuraciones y poner en marcha todos los componentes definidos en el resto de la aplicación.

@@ -2,7 +2,7 @@ package com.starwars.meli.service.impl;
 
 import com.lemmingapex.trilateration.NonLinearLeastSquaresSolver;
 import com.lemmingapex.trilateration.TrilaterationFunction;
-import com.starwars.meli.model.Coordinates;
+import com.starwars.meli.model.Position;
 import com.starwars.meli.service.ILocationService;
 import org.apache.commons.math3.fitting.leastsquares.LevenbergMarquardtOptimizer;
 import org.apache.commons.math3.fitting.leastsquares.LeastSquaresOptimizer.Optimum;
@@ -32,10 +32,10 @@ public class LocationServiceImpl implements ILocationService {
      * Calcula las coordenadas del emisor basándose en las distancias.
      *
      * @param distances Arreglo de distancias desde el emisor a cada satélite.
-     * @return Un objeto {@link Coordinates} con las coordenadas (x, y) calculadas.
+     * @return Un objeto {@link Position} con las coordenadas (x, y) calculadas.
      */
     @Override
-    public Coordinates calculateLocation(double[] distances) {
+    public Position calculateLocation(double[] distances) {
         // Crea la función de trilateración utilizando las posiciones de los satélites y las distancias proporcionadas.
         TrilaterationFunction function = new TrilaterationFunction(SATELLITE_POSITIONS, distances);
         // Configura el solver utilizando el optimizador Levenberg-Marquardt para minimizar el error.
@@ -47,6 +47,6 @@ public class LocationServiceImpl implements ILocationService {
         Optimum optimum = solver.solve();
         double[] calculatedPosition = optimum.getPoint().toArray();
         // Retorna las coordenadas encapsuladas en un objeto Coordinates.
-        return new Coordinates(calculatedPosition[0], calculatedPosition[1]);
+        return new Position(calculatedPosition[0], calculatedPosition[1]);
     }
 }

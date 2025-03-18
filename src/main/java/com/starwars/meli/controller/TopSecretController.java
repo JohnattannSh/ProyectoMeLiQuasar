@@ -1,52 +1,48 @@
 package com.starwars.meli.controller;
 
 import com.starwars.meli.exception.TopsecretException;
-import com.starwars.meli.model.Coordinates;
 import com.starwars.meli.model.RebelRequest;
 import com.starwars.meli.model.RebelResponse;
-import com.starwars.meli.model.Satellite;
-import com.starwars.meli.service.ILocationService;
-import com.starwars.meli.service.IMessageAssemblerService;
+import com.starwars.meli.service.ITopSecretService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import lombok.extern.slf4j.Slf4j;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Controlador REST para el endpoint "/topsecret".
+ * <p>
+ * Recibe la solicitud que contiene la información de los satélites y delega la lógica de negocio en el servicio.
+ * </p>
  */
-@Slf4j
 @RestController
 @RequestMapping("/topsecret")
 public class TopSecretController {
 
-    // Inyección de dependencias usando interfaces.
-    private final ILocationService locationCalculator;
-    private final IMessageAssemblerService messageAssembler;
+    private final ITopSecretService topSecretService;
 
-    public TopSecretController(ILocationService locationCalculator, IMessageAssemblerService messageAssembler) {
-        this.locationCalculator = locationCalculator;
-        this.messageAssembler = messageAssembler;
+    public TopSecretController(ITopSecretService topSecretService) {
+        this.topSecretService = topSecretService;
     }
 
     /**
-     * Endpoint para obtener la posición y mensaje reconstruido.
+     * Endpoint POST para obtener la posición y mensaje reconstruido.
      *
-     * @param request Objeto con la información de los satélites.
-     * @return ResponseEntity con la respuesta o error.
+     * @param request Objeto RebelRequest con la información de los satélites.
+     * @return ResponseEntity con RebelResponse en caso de éxito o con un error en caso de fallo.
      */
     @PostMapping("/")
     @Operation(
             summary = "Servicio POST para obtener la posición desconocida y el mensaje secreto.",
-            description = "Calcula la posición del emisor utilizando las distancias y reconstruye el mensaje a partir de los fragmentos enviados.",
+            description = "Calcula la posición del emisor y reconstruye el mensaje a partir de la información de los satélites.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
@@ -78,35 +74,9 @@ public class TopSecretController {
                     )
             }
     )
-    public ResponseEntity<?> getTopSecret(@RequestBody RebelRequest request) {
-        // Verifica que se reciba la información de 3 satélites.
-        if (request.getSatellites() == null || request.getSatellites().size() != 3) {
-            throw new TopsecretException("Información insuficiente o error en la operación");
-        }
-
-        // Crea un mapa para acceder a cada satélite en minúsculas.
-        Map<String, Satellite> satelliteMap = request.getSatellites().stream()
-                .collect(Collectors.toMap(s -> s.getName().toLowerCase(), s -> s));
-
-        // Extrae la información de cada satélite.
-        Satellite kenobi = satelliteMap.get("kenobi");
-        Satellite skywalker = satelliteMap.get("skywalker");
-        Satellite sato = satelliteMap.get("sato");
-
-        if (kenobi == null || skywalker == null || sato == null) {
-            throw new TopsecretException("Información insuficiente o error en la operación");
-        }
-
-        // Obtiene las distancias.
-        double[] distances = new double[]{kenobi.getDistance(), skywalker.getDistance(), sato.getDistance()};
-        // Calcula la ubicación.
-        Coordinates coordinates = locationCalculator.calculateLocation(distances);
-        // Reconstruye el mensaje.
-        List<String[]> messages = Arrays.asList(kenobi.getMessage(), skywalker.getMessage(), sato.getMessage());
-        String message = messageAssembler.assembleMessage(messages);
-
-        RebelResponse response = new RebelResponse(coordinates, message);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<RebelResponse> getTopSecret(@Valid @RequestBody RebelRequest request) {
+        //RebelResponse response = topSecretService.processTopSecretRequest(request)
+        return ResponseEntity.ok(topSecretService.processTopSecretRequest(request));
     }
 
     /**
@@ -119,6 +89,6 @@ public class TopSecretController {
     public ResponseEntity<Map<String, String>> handleTopSecretException(TopsecretException ex) {
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("message", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 }

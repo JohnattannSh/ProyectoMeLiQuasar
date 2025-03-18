@@ -2,16 +2,12 @@ package com.starwars.meli.model;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * Clase que representa la información enviada por un satélite. (nombre, distancia, fragmento de mensaje)
  */
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Satellite {
     /**
      * Nombre del satélite.
