@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TopSecretRequest {
+public class RebelRequest {
     /**
      * Lista de satélites con la información necesaria para calcular la posición y el mensaje.
      */

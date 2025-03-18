@@ -1,5 +1,6 @@
 plugins {
 	id 'java'
+	id 'war'
 	id 'org.springframework.boot' version '3.4.3'
 	id 'io.spring.dependency-management' version '1.1.7'
 }
@@ -18,31 +19,31 @@ repositories {
 }
 
 dependencies {
-	// Spring Boot Web para crear la API REST
-	implementation 'org.springframework.boot:spring-boot-starter-web'
+	// Spring Boot Web sin el Tomcat embebido, ya que Elastic Beanstalk usará su propio contenedor Tomcat.
+	implementation('org.springframework.boot:spring-boot-starter-web') {
+		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+	}
+	// Tomcat se provee en tiempo de ejecución por el contenedor.
+	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
 
-	// Dependencias  Lombok para reducir código repetitivo
+	// Lombok para reducir código repetitivo.
 	implementation 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 
-	// Jackson (incluido en Spring Boot Web, pero explícito para claridad)
+	// Jackson (aunque ya viene incluido en Spring Boot, se agrega para mayor claridad).
 	implementation 'com.fasterxml.jackson.core:jackson-databind'
 
-	// Dependencias para pruebas
+	// Dependencias para pruebas.
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-	// Dependencias para la logica de la trilateracion
+	// Dependencias para la lógica de la trilateración.
 	implementation 'com.lemmingapex.trilateration:trilateration:1.0.2'
 	implementation 'org.apache.commons:commons-math3:3.6.1'
 
-	// Dependencia para Swagger
+	// Dependencia para Swagger (documentación de la API).
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
 
-	// Dependencia para configurar bean de Jakarta Validator
+	// Proveedor de validación Bean (Jakarta Validator).
 	implementation 'org.hibernate.validator:hibernate-validator'
-}
-
-tasks.named('test') {
-	useJUnitPlatform()
 }

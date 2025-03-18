@@ -5,9 +5,15 @@ import org.springframework.context.annotation.Configuration;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 
+/**
+ * Configuración de Swagger para la documentación de la API REST.
+ * <p>
+ * Esta clase define un bean de OpenAPI que contiene la información básica de la API,
+ * como el título, versión y descripción, que se mostrará en la interfaz de Swagger UI.
+ * </p>
+ */
 @Configuration
 public class SwaggerConfig {
-
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()

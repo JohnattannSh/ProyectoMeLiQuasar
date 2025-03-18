@@ -1,23 +1,24 @@
 package com.starwars.meli.controller;
 
 import com.starwars.meli.exception.TopsecretException;
-import com.starwars.meli.model.*;
-import com.starwars.meli.service.OperationService;
+import com.starwars.meli.model.Coordinates;
+import com.starwars.meli.model.Satellite;
+import com.starwars.meli.model.RebelResponse;
+import com.starwars.meli.service.ILocationService;
+import com.starwars.meli.service.IMessageAssemblerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.Arrays;
-import java.util.List;
-import java.util.HashMap;
 
 /**
  * Controlador REST para el endpoint "/topsecret_split".
@@ -26,33 +27,32 @@ import java.util.HashMap;
  * mediante un GET para calcular la posición del emisor y reconstruir el mensaje completo.
  * </p>
  */
+@Slf4j
 @RestController
 @RequestMapping("/topsecret_split")
 public class TopSecretSplitController {
 
-    /**
-     * Almacenamiento en memoria de la información recibida de cada satélite.
-     * Se usa un mapa concurrente donde la clave es el nombre del satélite (en minúsculas)
-     * y el valor es el objeto Satellite con sus datos.
-     */
     private static final Map<String, Satellite> satelliteData = new ConcurrentHashMap<>();
 
-    /**
-     * Servicio que contiene la lógica de negocio para calcular la posición y reconstruir el mensaje.
-     */
-    private final OperationService operationService = new OperationService();
+    // Inyección de dependencias a través del constructor.
+    private final ILocationService iLocationService;
+    private final IMessageAssemblerService iMessageAssemblerService;
+
+    public TopSecretSplitController(ILocationService locationCalculator, IMessageAssemblerService messageAssembler) {
+        this.iLocationService = locationCalculator;
+        this.iMessageAssemblerService = messageAssembler;
+    }
 
     /**
      * Endpoint para recibir la información de un satélite individual.
      * <p>
      * Recibe el nombre del satélite en la URL y, en el cuerpo de la petición, la distancia y
-     * los fragmentos del mensaje. Si el request está mal formado (por ejemplo, el objeto es nulo),
-     * se lanza una excepción para indicar un mal request.
+     * los fragmentos del mensaje. Si el request está mal formado, se lanza una excepción.
      * </p>
      *
      * @param satelliteName El nombre del satélite (por ejemplo, "kenobi", "skywalker" o "sato").
      * @param satellite     Objeto que contiene la distancia y el mensaje recibido del satélite.
-     * @return ResponseEntity con código 200 OK si se almacenó correctamente.
+     * @return ResponseEntity con código 200 OK y un mensaje de éxito.
      */
     @PostMapping("/{satellite_name}")
     @Operation(
@@ -91,23 +91,16 @@ public class TopSecretSplitController {
     )
     public ResponseEntity<?> postSatelliteData(@PathVariable("satellite_name") String satelliteName,
                                                @Valid @RequestBody Satellite satellite) {
-        // Si el objeto Satellite es nulo, se lanza una excepción (la validación con @Valid se encargará de ello).
         if (satellite == null) {
             throw new TopsecretException("Datos inválidos");
         }
-        // Se normaliza el nombre a minúsculas para mantener consistencia en la clave del mapa.
         satellite.setName(satelliteName.toLowerCase());
-        // Almacena la información del satélite en el mapa.
         satelliteData.put(satelliteName.toLowerCase(), satellite);
 
-        // Crea la respuesta de éxito con la clave "message".
         Map<String, String> response = new HashMap<>();
         response.put("message", "fragmento guardado exitosamente");
-
-        // Retorna la respuesta con código HTTP 200 OK.
         return ResponseEntity.ok(response);
     }
-
 
     /**
      * Endpoint para consolidar la información de los tres satélites y calcular la posición y el mensaje.
@@ -123,14 +116,14 @@ public class TopSecretSplitController {
     @GetMapping
     @Operation(
             summary = "Servicio GET para consultar el mensaje secreto consolidado.",
-            description = "Consolida la información de los tres satélites (kenobi, skywalker y sato) para calcular la posición del emisor y reconstruir el mensaje.",
+            description = "Consolida la información de los tres satélites para calcular la posición del emisor y reconstruir el mensaje.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
                             description = "Operación exitosa",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = TopSecretResponse.class),
+                                    schema = @Schema(implementation = RebelResponse.class),
                                     examples = {
                                             @ExampleObject(
                                                     name = "Ejemplo de respuesta",
@@ -156,40 +149,26 @@ public class TopSecretSplitController {
             }
     )
     public ResponseEntity<?> getTopSecretSplit() {
-        // Verifica que se hayan recibido los datos de los tres satélites.
         if (!(satelliteData.containsKey("kenobi") &&
                 satelliteData.containsKey("skywalker") &&
                 satelliteData.containsKey("sato"))) {
             throw new TopsecretException("Información insuficiente o error en la operación");
         }
-        // Extrae los objetos Satellite del mapa.
         Satellite kenobi = satelliteData.get("kenobi");
         Satellite skywalker = satelliteData.get("skywalker");
         Satellite sato = satelliteData.get("sato");
 
-        // Agrupa las distancias en un arreglo para pasarlas al servicio.
         double[] distances = new double[]{kenobi.getDistance(), skywalker.getDistance(), sato.getDistance()};
-
-        // Calcula la posición del emisor utilizando la lógica de trilateración.
-        Location point = operationService.getLocation(distances);
-
-        // Agrupa los fragmentos de mensaje de cada satélite.
+        Coordinates coordinates = iLocationService.calculateLocation(distances);
         List<String[]> messages = Arrays.asList(kenobi.getMessage(), skywalker.getMessage(), sato.getMessage());
+        String message = iMessageAssemblerService.assembleMessage(messages);
 
-        // Reconstruye el mensaje original a partir de los fragmentos recibidos.
-        String message = operationService.getMessage(messages);
-
-        // Crea la respuesta que contiene la posición y el mensaje.
-        TopSecretResponse response = new TopSecretResponse(new Position(point.getX(), point.getY()), message);
+        RebelResponse response = new RebelResponse(coordinates, message);
         return ResponseEntity.ok(response);
     }
 
     /**
      * Manejador de excepciones para TopsecretException.
-     * <p>
-     * Captura la TopsecretException y retorna un JSON con la clave "message" y el mensaje de error,
-     * utilizando un Map sin necesidad de un modelo adicional.
-     * </p>
      *
      * @param ex La excepción capturada.
      * @return ResponseEntity con un Map que contiene el mensaje de error.

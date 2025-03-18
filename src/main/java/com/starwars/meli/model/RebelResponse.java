@@ -10,11 +10,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TopSecretResponse {
+public class RebelResponse {
     /**
      * Objeto que contiene las coordenadas de la posición del emisor.
      */
-    private Position position;
+    private Coordinates position;
 
     /**
      * Mensaje completo reconstruido a partir de los fragmentos recibidos.
