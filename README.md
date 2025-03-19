@@ -53,25 +53,25 @@ Utiliza algoritmos de trilateración para calcular la posición y luego reconstr
   Ingresar la siguiente URL http://QuasarMeLi-env.eba-hw4cs9mu.us-east-2.elasticbeanstalk.com en el aplicativo de preferencia y dependiendo del servicio que se quiera consumir se ajusta el endPoint, por ejemplo:
 
   - **/topsecret/**  
-  ![Diagrama del sistema](multimedia\topsecretPostman.png)
+  ![Diagrama del sistema](multimedia/topsecretPostman.png)
   - **/topsecret_split/kenobi**
-  ![Diagrama del sistema](multimedia\topsecret_splitKenobi.png)
+  ![Diagrama del sistema](multimedia/topsecret_splitKenobi.png)
 
 - **Mediante Swagger:**
   Ingresar la siguiente URL en el navegador (Importante: NO estar en modo incognito) http://quasarmeli-env.eba-hw4cs9mu.us-east-2.elasticbeanstalk.com/swagger-ui/index.html, se encontrará con una interfaz grafica que proporciona Swagger la cual permite realizar los consumos directamente desde esa interfaz, al seguir estos pasos se puede consumir el servicio que se desee de la API REST:  
 
   **1.** Dar click en el boton "Try it out" del servicio que se quiera consumir:
-  ![Diagrama del sistema](multimedia\exampleTry.png)
+  ![Diagrama del sistema](multimedia/exampleTry.png)
   **2.** Rellenar el request de manera adecuada y luego oprimir el boton de "Execute", por ejemplo:
 
   - **/topsecret/**  
-    ![Diagrama del sistema](multimedia\topsecretSwagger.png)
+    ![Diagrama del sistema](multimedia/topsecretSwagger.png)
   - **/topsecret_split/{satellite_name}**  
   En este servicio aparte de enviar el JSON request, hay que enviar el parametro del nombre del satelite al cual se le quiere actualizar el array de strings que contiene el mensaje (Señalado en el recuadro verde).
-    ![Diagrama del sistema](multimedia\topsecret_splitSwaggerKenobi.png)
+    ![Diagrama del sistema](multimedia/topsecret_splitSwaggerKenobi.png)
 
   **3.** Verificar la respuesta que nos da el servicio:
   - **/topsecret/**  
   ![Diagrama del sistema](multimedia/topsecretSwaggerResponse.png)
   - **/topsecret_split/{satellite_name}**  
-  ![Diagrama del sistema](multimedia\topsecret_splitSwaggerResponse.png)
+  ![Diagrama del sistema](multimedia/topsecret_splitSwaggerResponse.png)
