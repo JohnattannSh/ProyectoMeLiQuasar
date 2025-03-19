@@ -18,7 +18,7 @@ public class Satellite {
      * Distancia desde el satélite hasta el emisor.
      */
     @NotNull(message = "La distancia es obligatoria")
-    private double distance;
+    private Double distance;
 
     /**
      * Array de fragmento del mensaje recibido por el satélite.

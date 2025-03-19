@@ -49,8 +49,4 @@ Utiliza algoritmos de trilateración para calcular la posición y luego reconstr
 
 ## Uso de la API
 
-## Instalación
 
-1. Clona el repositorio:
-   ```bash
-   git clone https://github.com/JohnattannSh/ProyectoMeLiQuasar.git

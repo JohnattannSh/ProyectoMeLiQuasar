@@ -1,7 +1,9 @@
 package com.starwars.meli.controller;
 
 import com.starwars.meli.model.RebelResponse;
+import com.starwars.meli.model.Satellite;
 import com.starwars.meli.service.ITopSecretSplitService;
+import com.starwars.meli.validation.ValidationUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -74,7 +76,8 @@ public class TopSecretSplitController {
             }
     )
     public ResponseEntity<?> postSatelliteData(@PathVariable("satellite_name") String satelliteName,
-                                               @Valid @RequestBody com.starwars.meli.model.Satellite satellite) {
+                                               @Valid @RequestBody Satellite satellite) {
+        ValidationUtil.validateSatelliteName(satelliteName);
         topSecretSplitService.storeSatellite(satelliteName, satellite);
         Map<String, String> response = new HashMap<>();
         response.put("message", "fragmento guardado exitosamente");
@@ -122,7 +125,6 @@ public class TopSecretSplitController {
             }
     )
     public ResponseEntity<RebelResponse> getTopSecretSplit() {
-        // Llama al método que procesa la información almacenada, sin requerir un request
         RebelResponse response = topSecretSplitService.processStoredData();
         return ResponseEntity.ok(response);
     }

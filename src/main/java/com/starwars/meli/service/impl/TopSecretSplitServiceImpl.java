@@ -35,6 +35,9 @@ public class TopSecretSplitServiceImpl implements ITopSecretSplitService {
         }
         satellite.setName(satelliteName.toLowerCase());
         satelliteData.put(satelliteName.toLowerCase(), satellite);
+
+        ValidationUtil.validateSatelliteName(satelliteName);
+
     }
 
     @Override

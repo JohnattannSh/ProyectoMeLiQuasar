@@ -6,6 +6,7 @@ import com.starwars.meli.model.Satellite;
 import java.util.Map;
 import java.util.List;
 import java.util.Arrays;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -60,4 +61,14 @@ public class ValidationUtil {
         }
         return satelliteData;
     }
+
+    private static final Set<String> VALID_NAMES = Set.of("kenobi", "skywalker", "sato");
+
+    public static void validateSatelliteName(String name) {
+        if (name == null || !VALID_NAMES.contains(name.toLowerCase())) {
+            throw new TopsecretException("Nombre de satélite inválido: " + name);
+        }
+    }
+
+
 }

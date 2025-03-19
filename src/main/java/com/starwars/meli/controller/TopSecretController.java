@@ -59,8 +59,8 @@ public class TopSecretController {
                             )
                     ),
                     @ApiResponse(
-                            responseCode = "404",
-                            description = "Información insuficiente o error en la operación",
+                            responseCode = "400",
+                            description = "Bad Request",
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = Map.class),
@@ -75,7 +75,6 @@ public class TopSecretController {
             }
     )
     public ResponseEntity<RebelResponse> getTopSecret(@Valid @RequestBody RebelRequest request) {
-        //RebelResponse response = topSecretService.processTopSecretRequest(request)
         return ResponseEntity.ok(topSecretService.processTopSecretRequest(request));
     }
 
