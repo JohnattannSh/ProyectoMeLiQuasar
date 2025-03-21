@@ -7,6 +7,28 @@ Operación Quasar es una aplicación diseñada para calcular la posición de un 
 La aplicación recibe datos de tres satélites (por ejemplo, Kenobi, Skywalker y Sato) a través de endpoints REST.  
 Utiliza algoritmos de trilateración para calcular la posición y luego reconstruye el mensaje secreto a partir de fragmentos enviados por cada satélite.
 
+## Tecnologias usadas en el proyecto.
+
+- **Java 21:**
+  Lenguaje base en el el que construyo el proyecto. 
+
+- **Spring Boot:**
+  Framework para adaptar el proyecto a la tecnologia de microserivicios.
+
+- **Swagger:**
+  Herramienta para documentar la API.
+
+## Librerias usadas en el proyecto.
+
+- **Lombok:**
+  Reduce código repetitivo mediante anotaciones para generación automática de métodos.
+
+- **com.lemmingapex.trilateration:trilateration:1.0.2:**
+  Implementación de algoritmos de trilateración.
+
+- **org.apache.commons:commons-math3:3.6.1:**
+  Implementación de algoritmos de calculos avanzados.
+
 ## Características
 
 - **Calcular posición:**  
@@ -52,9 +74,36 @@ Utiliza algoritmos de trilateración para calcular la posición y luego reconstr
 - **Mediante PostMan / Thunder Client:**
   Ingresar la siguiente URL http://QuasarMeLi-env.eba-hw4cs9mu.us-east-2.elasticbeanstalk.com en el aplicativo de preferencia y dependiendo del servicio que se quiera consumir se ajusta el endPoint, por ejemplo:
 
-  - **/topsecret/**  
+- **/topsecret/**
+  ```json
+  {
+    "satellites": [
+      {
+        "name": "kenobi",
+        "distance": 100.0,
+        "message": ["este", "", "", "mensaje", ""]
+      },
+      {
+        "name": "skywalker",
+        "distance": 115.5,
+        "message": ["", "es", "", "", "secreto"]
+      },
+      {
+        "name": "sato",
+        "distance": 142.7,
+        "message": ["", "", "un", "", ""]
+      }
+    ]
+  }
+---
   ![Diagrama del sistema](multimedia/topsecretPostman.png)
   - **/topsecret_split/kenobi**
+    ```json
+    {
+    "distance": 100.0,
+    "message": ["hay", "", "", "el", ""]
+    }
+---
   ![Diagrama del sistema](multimedia/topsecret_splitKenobi.png)
 
 - **Mediante Swagger:**
@@ -67,7 +116,7 @@ Utiliza algoritmos de trilateración para calcular la posición y luego reconstr
   - **/topsecret/**  
     ![Diagrama del sistema](multimedia/topsecretSwagger.png)
   - **/topsecret_split/{satellite_name}**  
-  En este servicio aparte de enviar el JSON request, hay que enviar el parametro del nombre del satelite al cual se le quiere actualizar el array de strings que contiene el mensaje (Señalado en el recuadro verde).
+  En este servicio aparte de enviar el JSON request, hay que enviar el parametro del nombre del satelite (Señalado en el recuadro verde) al cual se le quiere actualizar el array de strings que contiene el mensaje.
     ![Diagrama del sistema](multimedia/topsecret_splitSwaggerKenobi.png)
 
   **3.** Verificar la respuesta que nos da el servicio:

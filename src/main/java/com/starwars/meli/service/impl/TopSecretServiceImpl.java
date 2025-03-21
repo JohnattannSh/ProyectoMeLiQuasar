@@ -10,6 +10,7 @@ import com.starwars.meli.service.ITopSecretService;
 import com.starwars.meli.validation.ValidationUtil;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -32,7 +33,12 @@ public class TopSecretServiceImpl implements ITopSecretService {
     public RebelResponse processTopSecretRequest(RebelRequest request) {
         // Valida y mapea la solicitud.
         Map<String, Satellite> satelliteMap = ValidationUtil.validateAndMapRebelRequest(request);
+        return processTopSecretRequest(satelliteMap);
+    }
 
+    @Override
+    public RebelResponse processTopSecretRequest(Map<String, Satellite> satelliteMap) {
+        // Extrae los satélites requeridos
         List<Satellite> satellites = ValidationUtil.extractRequiredSatellites(satelliteMap);
 
         // Calcula la ubicación usando las distancias de los satélites.
@@ -45,7 +51,7 @@ public class TopSecretServiceImpl implements ITopSecretService {
 
         // Ensambla el mensaje a partir de los fragmentos de los satélites.
         String message = messageAssemblerService.assembleMessage(
-                java.util.Arrays.asList(
+                Arrays.asList(
                         satellites.get(0).getMessage(),
                         satellites.get(1).getMessage(),
                         satellites.get(2).getMessage()

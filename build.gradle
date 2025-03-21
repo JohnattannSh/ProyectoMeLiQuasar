@@ -19,23 +19,15 @@ repositories {
 }
 
 dependencies {
-	// Spring Boot Web sin el Tomcat embebido, ya que Elastic Beanstalk usará su propio contenedor Tomcat.
-	implementation('org.springframework.boot:spring-boot-starter-web') {
-		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
-	}
-	// Tomcat se provee en tiempo de ejecución por el contenedor.
-	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+	// Proporciona las dependencias necesarias para construir una API REST.
+	implementation('org.springframework.boot:spring-boot-starter-web')
 
 	// Lombok para reducir código repetitivo.
 	implementation 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 
-	// Jackson (aunque ya viene incluido en Spring Boot, se agrega para mayor claridad).
+	// Manejo de conversión entre objetos Java y JSON.
 	implementation 'com.fasterxml.jackson.core:jackson-databind'
-
-	// Dependencias para pruebas.
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
 	// Dependencias para la lógica de la trilateración.
 	implementation 'com.lemmingapex.trilateration:trilateration:1.0.2'
